@@ -1,0 +1,28 @@
+# Java
+target/
+*.class
+
+# Maven
+.mvn/
+
+# Node
+node_modules/
+dist/
+
+# Environment
+.env
+*.env
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-data/
