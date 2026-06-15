@@ -3,12 +3,13 @@ services:
   postgres:
     image: postgres:16
     container_name: support-postgres
-    restart: always
 
     environment:
       POSTGRES_DB: support_db
       POSTGRES_USER: support_user
       POSTGRES_PASSWORD: support_password
+      TZ: Asia/Kolkata
+      PGTZ: Asia/Kolkata
 
     ports:
       - "5433:5432"
@@ -20,7 +21,6 @@ services:
   redis:
     image: redis:latest
     container_name: support-redis
-    restart: always
 
     ports:
       - "6379:6379"
