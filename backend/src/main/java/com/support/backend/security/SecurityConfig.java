@@ -4,6 +4,8 @@ package com.support.backend.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -35,6 +37,7 @@ public class SecurityConfig {
 
 
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
@@ -43,6 +46,7 @@ public class SecurityConfig {
 
 
         http
+
 
                 .csrf(
                         csrf ->
@@ -57,8 +61,11 @@ public class SecurityConfig {
 
                                 auth
 
+
                                 .requestMatchers(
+
                                         "/api/auth/**"
+
                                 )
 
                                 .permitAll()
@@ -85,6 +92,19 @@ public class SecurityConfig {
 
         return http.build();
 
+
+    }
+
+
+
+
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+
+
+        return new BCryptPasswordEncoder();
 
 
     }
