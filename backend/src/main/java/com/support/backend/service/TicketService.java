@@ -1,49 +1,172 @@
 package com.support.backend.service;
 
 
-import com.support.backend.entity.Ticket;
-import com.support.backend.repository.TicketRepository;
-
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 
+import org.springframework.stereotype.Service;
+
+
+import com.support.backend.entity.ChatMessage;
+import com.support.backend.entity.Ticket;
+
+
+import com.support.backend.repository.ChatMessageRepository;
+import com.support.backend.repository.TicketRepository;
+
+
+
 @Service
-@RequiredArgsConstructor
 public class TicketService {
+
 
 
     private final TicketRepository ticketRepository;
 
 
+    private final AiService aiService;
 
-    public Ticket createTicket(Ticket ticket) {
 
-        return ticketRepository.save(ticket);
+    private final ChatMessageRepository chatMessageRepository;
+
+
+
+
+
+    public TicketService(
+
+            TicketRepository ticketRepository,
+
+            AiService aiService,
+
+            ChatMessageRepository chatMessageRepository
+
+    ) {
+
+
+        this.ticketRepository =
+                ticketRepository;
+
+
+        this.aiService =
+                aiService;
+
+
+        this.chatMessageRepository =
+                chatMessageRepository;
+
 
     }
+
+
+
+
+
+
+    public Ticket createTicket(
+            Ticket ticket
+    ) {
+
+
+        return ticketRepository.save(
+                ticket
+        );
+
+
+    }
+
+
+
+
 
 
 
     public List<Ticket> getAllTickets() {
 
+
         return ticketRepository.findAll();
 
+
     }
 
 
 
-    public Ticket getTicketById(Long id) {
 
-        return ticketRepository.findById(id)
-                .orElseThrow(
-                    () -> new RuntimeException("Ticket not found")
+
+
+
+
+    public ChatMessage generateAiResponse(
+            Long ticketId
+    ) {
+
+
+
+
+        Ticket ticket =
+
+                ticketRepository
+
+                .findById(ticketId)
+
+                .orElseThrow();
+
+
+
+
+
+
+        String aiReply =
+
+                aiService.generateReply(
+
+                        ticket.getDescription()
+
                 );
 
+
+
+
+
+
+        ChatMessage message =
+                new ChatMessage();
+
+
+
+
+        message.setSender(
+                "AI"
+        );
+
+
+        message.setMessage(
+                aiReply
+        );
+
+
+        message.setCreatedAt(
+                LocalDateTime.now()
+        );
+
+
+        message.setTicket(
+                ticket
+        );
+
+
+
+
+
+        return chatMessageRepository.save(
+                message
+        );
+
+
+
     }
+
 
 
 }
