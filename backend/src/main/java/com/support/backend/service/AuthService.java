@@ -1,5 +1,6 @@
 package com.support.backend.service;
 
+import com.support.backend.exception.ResourceNotFoundException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

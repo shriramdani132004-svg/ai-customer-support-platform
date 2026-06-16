@@ -1,16 +1,14 @@
 package com.support.backend.controller;
 
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.support.backend.dto.AuthResponse;
 import com.support.backend.dto.LoginRequest;
 import com.support.backend.dto.RegisterRequest;
-
 import com.support.backend.service.AuthService;
 
 
@@ -43,7 +41,7 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(
 
-            @RequestBody RegisterRequest request
+            @RequestBody @Valid RegisterRequest request
 
     ) {
 
@@ -64,7 +62,7 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(
 
-            @RequestBody LoginRequest request
+            @RequestBody @Valid LoginRequest request
 
     ) {
 

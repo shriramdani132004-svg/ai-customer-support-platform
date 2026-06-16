@@ -1,38 +1,87 @@
 package com.support.backend.service;
 
 
-import com.support.backend.entity.User;
-import com.support.backend.repository.UserRepository;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.support.backend.dto.UserDto;
+import com.support.backend.entity.User;
+import com.support.backend.repository.UserRepository;
+
+
 
 
 @Service
-@RequiredArgsConstructor
+
 public class UserService {
+
+
 
 
     private final UserRepository userRepository;
 
 
 
-    public User createUser(User user) {
 
-        return userRepository.save(user);
+    public UserService(
+
+            UserRepository userRepository
+
+    ) {
+
+
+        this.userRepository = userRepository;
+
 
     }
 
 
 
-    public List<User> getAllUsers() {
 
-        return userRepository.findAll();
+
+    public List<UserDto> getAllUsers(){
+
+
+
+        return userRepository.findAll()
+
+                .stream()
+
+                .map(this::convertToDto)
+
+                .collect(Collectors.toList());
+
+
 
     }
+
+
+
+
+
+    private UserDto convertToDto(User user){
+
+
+
+        return new UserDto(
+
+                user.getId(),
+
+                user.getName(),
+
+                user.getEmail(),
+
+                user.getRole()
+
+        );
+
+
+
+    }
+
 
 
 }
