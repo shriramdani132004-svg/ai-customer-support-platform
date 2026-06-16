@@ -1,16 +1,15 @@
 package com.support.backend.exception;
 
 
+import com.support.backend.response.ApiResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.support.backend.response.ApiResponse;
-
-
 
 
 @RestControllerAdvice
@@ -18,99 +17,62 @@ public class GlobalExceptionHandler {
 
 
 
-
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleNotFound(
-
-
+    public ResponseEntity<ApiResponse<Object>> handleResourceNotFound(
             ResourceNotFoundException exception
+    ){
 
 
-    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
 
+                        new ApiResponse<>(
 
+                                false,
 
-        ApiResponse<String> response =
+                                exception.getMessage(),
 
-                new ApiResponse<>(
+                                null
 
-                        false,
-
-                        exception.getMessage(),
-
-                        null
+                        )
 
                 );
 
 
-
-        return new ResponseEntity<>(
-
-                response,
-
-                HttpStatus.NOT_FOUND
-
-        );
-
-
-
     }
-
-
 
 
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<String>> handleValidation(
-
-
+    public ResponseEntity<ApiResponse<Object>> handleValidation(
             MethodArgumentNotValidException exception
+    ){
 
 
-    ) {
-
-
-
-        String errorMessage =
-
-                exception
-
-                        .getBindingResult()
-
-                        .getFieldErrors()
-
-                        .get(0)
-
-                        .getDefaultMessage();
+        String message = exception
+                .getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
 
 
 
+        return ResponseEntity
+                .badRequest()
+                .body(
 
+                        new ApiResponse<>(
 
-        ApiResponse<String> response =
+                                false,
 
-                new ApiResponse<>(
+                                message,
 
-                        false,
+                                null
 
-                        errorMessage,
-
-                        null
+                        )
 
                 );
-
-
-
-
-        return new ResponseEntity<>(
-
-                response,
-
-                HttpStatus.BAD_REQUEST
-
-        );
-
 
 
     }
@@ -118,41 +80,30 @@ public class GlobalExceptionHandler {
 
 
 
-
-
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<String>> handleGeneralException(
-
-
+    public ResponseEntity<ApiResponse<Object>> handleException(
             Exception exception
+    ){
 
 
-    ) {
+        exception.printStackTrace();
 
 
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
 
-        ApiResponse<String> response =
+                        new ApiResponse<>(
 
-                new ApiResponse<>(
+                                false,
 
-                        false,
+                                exception.getMessage(),
 
-                        "Something went wrong",
+                                null
 
-                        null
+                        )
 
                 );
-
-
-
-        return new ResponseEntity<>(
-
-                response,
-
-                HttpStatus.INTERNAL_SERVER_ERROR
-
-        );
-
 
 
     }
