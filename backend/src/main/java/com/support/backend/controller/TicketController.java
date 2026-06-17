@@ -1,11 +1,13 @@
 package com.support.backend.controller;
 
 
+
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,9 +19,15 @@ import com.support.backend.service.TicketService;
 
 
 
+
+
 @RestController
+
 @RequestMapping("/api/tickets")
+
 public class TicketController {
+
+
 
 
 
@@ -28,17 +36,26 @@ public class TicketController {
 
 
 
+
+
+
     public TicketController(
 
             TicketService ticketService
 
-    ) {
+    ){
+
 
 
         this.ticketService = ticketService;
 
 
+
     }
+
+
+
+
 
 
 
@@ -46,17 +63,26 @@ public class TicketController {
 
 
     @PostMapping
+
     public Ticket create(
 
             @RequestBody Ticket ticket
 
-    ) {
+    ){
 
 
-        return ticketService.createTicket(ticket);
+
+        return ticketService.createTicket(
+
+                ticket
+
+        );
+
 
 
     }
+
+
 
 
 
@@ -66,13 +92,19 @@ public class TicketController {
 
 
     @GetMapping
+
     public List<Ticket> getAll(){
+
 
 
         return ticketService.getAllTickets();
 
 
+
     }
+
+
+
 
 
 
@@ -82,6 +114,7 @@ public class TicketController {
 
 
     @PostMapping("/{id}/ai-response")
+
     public ChatMessage generateAiResponse(
 
             @PathVariable Long id
@@ -89,10 +122,48 @@ public class TicketController {
     ){
 
 
-        return ticketService.generateAiResponse(id);
+
+        return ticketService.generateAiResponse(
+
+                id
+
+        );
+
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    @PutMapping("/{id}/attempt")
+
+    public Ticket increaseAttempt(
+
+            @PathVariable Long id
+
+    ){
+
+
+
+        return ticketService.increaseAttempt(
+
+                id
+
+        );
+
+
+
+    }
+
 
 
 

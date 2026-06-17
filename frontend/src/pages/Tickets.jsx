@@ -13,6 +13,7 @@ import {
 
 
 
+
 function Tickets(){
 
 
@@ -31,16 +32,35 @@ function Tickets(){
 
 
 
+
+
+
     const loadTickets = async()=>{
 
 
-        const data = await getTickets();
+        try{
 
 
-        setTickets(data);
+            const data = await getTickets();
+
+
+            setTickets(data);
+
+
+
+        }
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
+
 
 
     };
+
 
 
 
@@ -53,6 +73,7 @@ function Tickets(){
 
 
         e.preventDefault();
+
 
 
 
@@ -76,6 +97,8 @@ function Tickets(){
 
 
 
+
+
         setTitle("");
 
 
@@ -86,11 +109,11 @@ function Tickets(){
 
 
 
-
         loadTickets();
 
 
     };
+
 
 
 
@@ -115,6 +138,8 @@ function Tickets(){
 
 
 
+
+
     return(
 
 
@@ -128,6 +153,7 @@ function Tickets(){
             <div className="p-10 bg-gray-100 min-h-screen">
 
 
+
                 <h1 className="text-3xl font-bold mb-8">
 
 
@@ -135,6 +161,7 @@ function Tickets(){
 
 
                 </h1>
+
 
 
 
@@ -165,6 +192,8 @@ function Tickets(){
 
 
 
+
+
                     <input
 
                         className="border p-3 mr-3"
@@ -176,6 +205,8 @@ function Tickets(){
                         onChange={(e)=>setDescription(e.target.value)}
 
                     />
+
+
 
 
 
@@ -206,7 +237,6 @@ function Tickets(){
                         </option>
 
 
-
                         <option value="LOW">
 
                             LOW
@@ -214,8 +244,9 @@ function Tickets(){
                         </option>
 
 
-
                     </select>
+
+
 
 
 
@@ -245,12 +276,14 @@ function Tickets(){
 
 
 
+
+
                 {
 
 
                     tickets.map(
 
-                        ticket=>(
+                        ticket => (
 
 
 
@@ -265,7 +298,9 @@ function Tickets(){
 
 
 
+
                                 <div className="flex justify-between">
+
 
 
                                     <h2 className="text-xl font-bold">
@@ -279,17 +314,31 @@ function Tickets(){
 
 
 
-                                    <span className="font-bold">
 
 
-                                        {ticket.priority}
+
+                                    {
+
+                                        ticket.escalated &&
 
 
-                                    </span>
+                                        <span className="font-bold">
+
+
+                                            🚨 ESCALATED
+
+
+                                        </span>
+
+
+                                    }
+
+
 
 
 
                                 </div>
+
 
 
 
@@ -308,13 +357,11 @@ function Tickets(){
 
 
 
-                                <p className="mt-3">
+
+                                <p>
 
 
-                                    Status:
-
-
-                                    {ticket.status}
+                                    Priority: {ticket.priority}
 
 
                                 </p>
@@ -322,7 +369,55 @@ function Tickets(){
 
 
 
+
+                                <p>
+
+
+                                    Status: {ticket.status}
+
+
+                                </p>
+
+
+
+
+
+                                <p>
+
+
+                                    Attempts: {ticket.attemptCount || 0}
+
+
+                                </p>
+
+
+
+
+
+
+
+                                {
+
+
+                                    ticket.status==="HUMAN_REQUIRED" &&
+
+
+                                    <h3 className="font-bold mt-3">
+
+
+                                        Human Support Required
+
+
+                                    </h3>
+
+
+                                }
+
+
+
+
                             </div>
+
 
 
 
@@ -339,11 +434,11 @@ function Tickets(){
             </div>
 
 
-
         </>
 
 
     );
+
 
 
 }
