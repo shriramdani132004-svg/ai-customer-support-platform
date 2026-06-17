@@ -11,8 +11,11 @@ import Tickets from "./pages/Tickets";
 
 import Chat from "./pages/Chat";
 
+import Agent from "./pages/Agent";
+
 
 import ProtectedRoute from "./routes/ProtectedRoute";
+
 
 
 
@@ -21,13 +24,19 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 function App(){
 
 
+
     return(
+
 
 
         <BrowserRouter>
 
 
+
             <Routes>
+
+
+
 
 
 
@@ -38,6 +47,9 @@ function App(){
                     element={<Login />}
 
                 />
+
+
+
 
 
 
@@ -53,6 +65,10 @@ function App(){
 
 
 
+
+
+
+
                 <Route
 
                     path="/register"
@@ -60,6 +76,8 @@ function App(){
                     element={<Register />}
 
                 />
+
+
 
 
 
@@ -93,6 +111,9 @@ function App(){
 
 
 
+
+
+
                 <Route
 
                     path="/tickets"
@@ -119,11 +140,15 @@ function App(){
 
 
 
+
+
+
                 <Route
 
                     path="/chat"
 
                     element={
+
 
 
                         <ProtectedRoute>
@@ -135,22 +160,60 @@ function App(){
                         </ProtectedRoute>
 
 
+
                     }
 
                 />
 
 
 
+
+
+
+
+
+
+
+
+                <Route
+
+                    path="/agent"
+
+                    element={
+
+
+                        <ProtectedRoute>
+
+
+                            <Agent />
+
+
+                        </ProtectedRoute>
+
+
+                    }
+
+                />
+
+
+
+
+
+
             </Routes>
 
 
+
+
         </BrowserRouter>
+
 
 
     );
 
 
 }
+
 
 
 

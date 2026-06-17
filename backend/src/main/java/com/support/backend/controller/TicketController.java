@@ -168,4 +168,27 @@ public class TicketController {
 
 
 
+    @GetMapping("/{id}/messages")
+
+    public List<ChatMessage> getMessages(
+
+            @PathVariable Long id
+
+    ){
+
+
+
+        return ticketService.getTicketMessages(
+
+                id
+
+        );
+
+
+
+    }
+
+
+
+
 }

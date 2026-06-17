@@ -303,13 +303,23 @@ function Tickets(){
 
 
 
-                                    <h2 className="text-xl font-bold">
+                                    <div>
+
+   					 <p className="font-bold">
+
+     					   Ticket ID: {ticket.id}
+
+ 					   </p>
 
 
-                                        {ticket.title}
+ 				   <h2 className="text-xl font-bold">
+
+    				    {ticket.title}
+
+  					  </h2>
 
 
-                                    </h2>
+					</div>
 
 
 

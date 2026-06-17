@@ -5,15 +5,11 @@ package com.support.backend.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 import org.springframework.stereotype.Service;
-
 
 import com.support.backend.entity.ChatMessage;
 import com.support.backend.entity.Ticket;
-
 import com.support.backend.exception.ResourceNotFoundException;
-
 import com.support.backend.repository.ChatMessageRepository;
 import com.support.backend.repository.TicketRepository;
 
@@ -513,6 +509,43 @@ public class TicketService {
 
     }
 
+
+    public List<ChatMessage> getTicketMessages(
+
+            Long ticketId
+
+    ){
+
+
+
+        ticketRepository
+
+                .findById(ticketId)
+
+                .orElseThrow(
+
+                        () -> new ResourceNotFoundException(
+
+                                "Ticket not found"
+
+                        )
+
+                );
+
+
+
+
+
+
+        return chatMessageRepository.findByTicketId(
+
+                ticketId
+
+        );
+
+
+
+    }
 
 
 
