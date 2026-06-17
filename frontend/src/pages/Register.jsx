@@ -38,16 +38,19 @@ function Register(){
             await registerUser({
 
 
-                name:name,
+    name:name,
 
 
-                email:email,
+    email:email,
 
 
-                password:password
+    password:password,
 
 
-            });
+    role:"CUSTOMER"
+
+
+});
 
 
 

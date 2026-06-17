@@ -44,3 +44,17 @@ export const createTicket = async(ticket)=>{
 
 
 };
+export const deleteTicket = async(id)=>{
+
+
+    const response = await api.delete(
+
+        `/tickets/${id}`
+
+    );
+
+
+    return response.data;
+
+
+};

@@ -9,7 +9,7 @@ import { getAiResponse } from "../services/aiService";
 
 import { getTicketMessages } from "../services/agentService";
 
-
+import { useParams } from "react-router-dom";
 
 
 
@@ -19,7 +19,7 @@ function Chat(){
 
 
 
-    const [ticketId,setTicketId] = useState("");
+    const { ticketId } = useParams();
 
 
 
@@ -269,24 +269,7 @@ function Chat(){
 
 
 
-                <input
-
-                    className="border p-3 mb-5 w-full"
-
-                    placeholder="Enter Ticket ID"
-
-                    value={ticketId}
-
-                    onChange={(e)=>{
-
-                        setTicketId(e.target.value);
-
-                        loadMessages(e.target.value);
-
-                    }}
-
-                />
-
+                
 
 
 

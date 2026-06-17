@@ -1,22 +1,33 @@
 package com.support.backend.service;
 
 
-import com.support.backend.dto.AuthResponse;
-import com.support.backend.dto.LoginRequest;
-import com.support.backend.dto.RegisterRequest;
-
-import com.support.backend.entity.User;
-
-import com.support.backend.exception.ResourceNotFoundException;
-
-import com.support.backend.repository.UserRepository;
-
-import com.support.backend.security.JwtService;
-
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
+
+
+import com.support.backend.dto.AuthResponse;
+
+import com.support.backend.dto.LoginRequest;
+
+import com.support.backend.dto.RegisterRequest;
+
+
+import com.support.backend.entity.Order;
+
+import com.support.backend.entity.User;
+
+
+import com.support.backend.exception.ResourceNotFoundException;
+
+
+import com.support.backend.repository.OrderRepository;
+
+import com.support.backend.repository.UserRepository;
+
+
+import com.support.backend.security.JwtService;
+
 
 
 
@@ -30,6 +41,9 @@ public class AuthService {
     private final UserRepository userRepository;
 
 
+    private final OrderRepository orderRepository;
+
+
     private final PasswordEncoder passwordEncoder;
 
 
@@ -39,9 +53,12 @@ public class AuthService {
 
 
 
+
     public AuthService(
 
             UserRepository userRepository,
+
+            OrderRepository orderRepository,
 
             PasswordEncoder passwordEncoder,
 
@@ -51,6 +68,9 @@ public class AuthService {
 
 
         this.userRepository = userRepository;
+
+
+        this.orderRepository = orderRepository;
 
 
         this.passwordEncoder = passwordEncoder;
@@ -66,11 +86,17 @@ public class AuthService {
 
 
 
+
+
+
+
     public AuthResponse register(
 
             RegisterRequest request
 
     ){
+
+
 
 
 
@@ -89,9 +115,36 @@ public class AuthService {
         ){
 
 
-            throw new RuntimeException(
 
-                    "Email already exists"
+            User existingUser =
+
+                    userRepository
+
+                            .findByEmail(
+
+                                    request.getEmail()
+
+                            )
+
+                            .get();
+
+
+
+
+            String token =
+
+                    jwtService.generateToken(
+
+                            existingUser.getEmail()
+
+                    );
+
+
+
+
+            return new AuthResponse(
+
+                    token
 
             );
 
@@ -103,7 +156,12 @@ public class AuthService {
 
 
 
-        User user = new User();
+
+
+
+        User user =
+
+                new User();
 
 
 
@@ -128,24 +186,12 @@ public class AuthService {
 
         user.setPassword(
 
-
                 passwordEncoder.encode(
 
                         request.getPassword()
 
                 )
 
-
-        );
-
-
-
-
-
-        user.setRole(
-
-                request.getRole()
-
         );
 
 
@@ -153,11 +199,79 @@ public class AuthService {
 
 
 
-        userRepository.save(
+        if(request.getRole()==null){
 
-                user
 
-        );
+
+            user.setRole(
+
+                    "CUSTOMER"
+
+            );
+
+
+
+        }
+        else{
+
+
+
+            user.setRole(
+
+                    request.getRole()
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+
+        User savedUser =
+
+                userRepository.save(
+
+                        user
+
+                );
+
+
+
+
+
+
+
+
+        if(
+
+                "CUSTOMER".equals(
+
+                        savedUser.getRole()
+
+                )
+
+        ){
+
+
+
+            createFakeOrders(
+
+                    savedUser
+
+            );
+
+
+
+        }
+
+
+
 
 
 
@@ -168,10 +282,9 @@ public class AuthService {
 
                 jwtService.generateToken(
 
-                        user.getEmail()
+                        savedUser.getEmail()
 
                 );
-
 
 
 
@@ -186,6 +299,127 @@ public class AuthService {
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    private void createFakeOrders(
+
+            User user
+
+    ){
+
+
+
+
+
+        Order order1 =
+
+                Order.builder()
+
+                        .orderNumber("ORD-1001")
+
+                        .productName("Apple iPhone 16")
+
+                        .price(79999.0)
+
+                        .status("DELIVERED")
+
+                        .user(user)
+
+                        .build();
+
+
+
+
+
+
+
+
+        Order order2 =
+
+                Order.builder()
+
+                        .orderNumber("ORD-1002")
+
+                        .productName("Sony Headphones")
+
+                        .price(9999.0)
+
+                        .status("SHIPPED")
+
+                        .user(user)
+
+                        .build();
+
+
+
+
+
+
+
+
+        Order order3 =
+
+                Order.builder()
+
+                        .orderNumber("ORD-1003")
+
+                        .productName("Gaming Laptop")
+
+                        .price(65000.0)
+
+                        .status("PAYMENT ISSUE")
+
+                        .user(user)
+
+                        .build();
+
+
+
+
+
+
+
+
+        orderRepository.save(
+
+                order1
+
+        );
+
+
+
+        orderRepository.save(
+
+                order2
+
+        );
+
+
+
+        orderRepository.save(
+
+                order3
+
+        );
+
+
+
+    }
+
+
+
+
+
 
 
 
@@ -231,6 +465,7 @@ public class AuthService {
 
 
 
+
         if(
 
                 !passwordEncoder.matches(
@@ -254,6 +489,8 @@ public class AuthService {
 
 
         }
+
+
 
 
 

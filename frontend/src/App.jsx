@@ -16,9 +16,9 @@ import Agent from "./pages/Agent";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
+import CustomerDashboard from "./pages/CustomerDashboard";
 
-
-
+import Orders from "./pages/Orders";
 
 
 function App(){
@@ -62,7 +62,21 @@ function App(){
 
                 />
 
+		<Route
 
+    path="/orders"
+
+    element={
+
+        <ProtectedRoute>
+
+            <Orders />
+
+        </ProtectedRoute>
+
+    }
+
+/>
 
 
 
@@ -106,7 +120,21 @@ function App(){
                 />
 
 
+                <Route
 
+                     path="/customer/dashboard"
+
+                      element={
+
+                             <ProtectedRoute>
+
+                               <CustomerDashboard />
+
+                                </ProtectedRoute>
+
+                  }
+
+        />
 
 
 
@@ -145,7 +173,8 @@ function App(){
 
                 <Route
 
-                    path="/chat"
+    		path="/chat/:ticketId"
+
 
                     element={
 

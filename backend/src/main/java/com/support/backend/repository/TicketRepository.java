@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 import com.support.backend.entity.Ticket;
-
+import com.support.backend.entity.User;
 
 
 
@@ -22,7 +22,11 @@ public interface TicketRepository
 
 
 
+	List<Ticket> findByUser(
 
+        User user
+
+	);
 
 
     List<Ticket> findByStatus(

@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -10,10 +9,10 @@ import { useAuth } from "../context/AuthContext";
 function Navbar(){
 
 
+    const navigate = useNavigate();
 
-    const {logout} = useAuth();
 
-
+    const { logout } = useAuth();
 
 
 
@@ -22,13 +21,10 @@ function Navbar(){
     const handleLogout = ()=>{
 
 
-
         logout();
 
 
-
-        window.location.href="/login";
-
+        navigate("/login");
 
 
     };
@@ -39,49 +35,42 @@ function Navbar(){
 
 
 
-
     return(
 
 
-
-        <div className="bg-gray-900 text-white p-4 flex justify-between">
-
+        <div className="bg-gray-900 text-white p-5 flex justify-between">
 
 
 
+            <h1 className="font-bold text-xl">
 
-            <h2 className="font-bold text-xl">
+                ShopSphere Support
 
-
-
-                AI Support
-
-
-
-            </h2>
+            </h1>
 
 
 
 
 
+            <div className="flex gap-5">
 
 
 
-            <div className="flex gap-6">
-
-
-
-
-
-                <Link to="/dashboard">
-
+                <Link to="/customer/dashboard">
 
                     Dashboard
-
 
                 </Link>
 
 
+
+
+
+                <Link to="/orders">
+
+                    Orders
+
+                </Link>
 
 
 
@@ -89,69 +78,19 @@ function Navbar(){
 
                 <Link to="/tickets">
 
-
                     Tickets
 
-
                 </Link>
 
 
 
 
 
-
-
-
-                <Link to="/chat">
-
-
-                    AI Chat
-
-
-                </Link>
-
-
-
-
-
-
-
-
-                <Link to="/agent">
-
-
-                    Agent
-
-
-                </Link>
-
-
-
-
-
-
-
-
-
-                <button
-
-
-                    onClick={handleLogout}
-
-
-                    className="text-red-400"
-
-
-                >
-
-
+                <button onClick={handleLogout}>
 
                     Logout
 
-
-
                 </button>
-
 
 
 
@@ -159,18 +98,13 @@ function Navbar(){
             </div>
 
 
-
-
         </div>
-
 
 
     );
 
 
-
 }
-
 
 
 

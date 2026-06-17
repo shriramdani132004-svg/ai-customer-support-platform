@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.support.backend.entity.ChatMessage;
 import com.support.backend.entity.Ticket;
 import com.support.backend.service.TicketService;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.support.backend.dto.AiRequest;
 
@@ -192,7 +192,23 @@ public ChatMessage generateAiResponse(
 
     }
 
+@DeleteMapping("/{id}")
 
+public void deleteTicket(
+
+        @PathVariable Long id
+
+){
+
+
+    ticketService.deleteTicket(
+
+            id
+
+    );
+
+
+}
 
 
 }

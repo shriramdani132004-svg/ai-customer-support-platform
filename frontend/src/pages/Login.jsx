@@ -1,6 +1,6 @@
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 
-import { useNavigate } from "react-router-dom";
 
 import { loginUser } from "../services/authService";
 
@@ -77,11 +77,7 @@ function Login(){
 
 
 
-            navigate(
-
-                "/dashboard"
-
-            );
+            navigate("/customer/dashboard")
 
 
 
@@ -239,7 +235,31 @@ function Login(){
 
                 </button>
 
+	<p className="text-center mt-5">
 
+
+    New customer?
+
+
+    {" "}
+
+
+    <Link
+
+        to="/register"
+
+        className="text-blue-600 font-bold"
+
+    >
+
+
+        Create Account
+
+
+    </Link>
+
+
+</p>
 
 
 
