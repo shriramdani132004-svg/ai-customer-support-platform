@@ -1,29 +1,17 @@
 package com.support.backend.service;
 
 
-
 import java.time.LocalDateTime;
-
 import java.util.List;
 
-
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-
 import com.support.backend.entity.ChatMessage;
-
 import com.support.backend.entity.Ticket;
-
-
 import com.support.backend.exception.ResourceNotFoundException;
-
-
 import com.support.backend.repository.ChatMessageRepository;
-
 import com.support.backend.repository.TicketRepository;
-
-
-
 
 
 
@@ -31,16 +19,11 @@ import com.support.backend.repository.TicketRepository;
 public class AgentService {
 
 
-
-
     private final TicketRepository ticketRepository;
-
 
     private final ChatMessageRepository chatMessageRepository;
 
-
-
-
+    private final RedisTemplate<String,Object> redisTemplate;
 
 
 
@@ -49,26 +32,23 @@ public class AgentService {
 
             TicketRepository ticketRepository,
 
-            ChatMessageRepository chatMessageRepository
+            ChatMessageRepository chatMessageRepository,
+
+            RedisTemplate<String,Object> redisTemplate
 
     ){
 
 
-
-        this.ticketRepository =
-                ticketRepository;
+        this.ticketRepository = ticketRepository;
 
 
+        this.chatMessageRepository = chatMessageRepository;
 
-        this.chatMessageRepository =
-                chatMessageRepository;
 
+        this.redisTemplate = redisTemplate;
 
 
     }
-
-
-
 
 
 
@@ -79,7 +59,6 @@ public class AgentService {
     public List<Ticket> getEscalatedTickets(){
 
 
-
         return ticketRepository.findByStatus(
 
                 "HUMAN_REQUIRED"
@@ -87,10 +66,7 @@ public class AgentService {
         );
 
 
-
     }
-
-
 
 
 
@@ -108,36 +84,29 @@ public class AgentService {
     ){
 
 
-
-
-
         Ticket ticket =
 
                 ticketRepository
 
-                .findById(id)
+                        .findById(id)
 
-                .orElseThrow(
+                        .orElseThrow(
 
-                        () -> new ResourceNotFoundException(
+                                () -> new ResourceNotFoundException(
 
-                                "Ticket not found"
+                                        "Ticket not found"
 
-                        )
+                                )
 
-                );
-
-
-
+                        );
 
 
 
 
 
         ChatMessage message =
+
                 new ChatMessage();
-
-
 
 
 
@@ -151,7 +120,6 @@ public class AgentService {
 
 
 
-
         message.setMessage(
 
                 messageText
@@ -161,15 +129,11 @@ public class AgentService {
 
 
 
-
-
         message.setCreatedAt(
 
                 LocalDateTime.now()
 
         );
-
-
 
 
 
@@ -184,8 +148,6 @@ public class AgentService {
 
 
 
-
-
         return chatMessageRepository.save(
 
                 message
@@ -193,10 +155,7 @@ public class AgentService {
         );
 
 
-
     }
-
-
 
 
 
@@ -211,8 +170,6 @@ public class AgentService {
             Long id
 
     ){
-
-
 
 
 
@@ -237,14 +194,11 @@ public class AgentService {
 
 
 
-
-
         ticket.setStatus(
 
                 "RESOLVED"
 
         );
-
 
 
 
@@ -259,20 +213,32 @@ public class AgentService {
 
 
 
+        Ticket saved =
+
+                ticketRepository.save(
+
+                        ticket
+
+                );
 
 
-        return ticketRepository.save(
 
-                ticket
+
+
+        redisTemplate.delete(
+
+                "tickets"
 
         );
 
 
 
+
+
+        return saved;
+
+
     }
-
-
-
 
 
 }

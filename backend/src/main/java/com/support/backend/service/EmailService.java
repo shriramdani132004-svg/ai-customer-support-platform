@@ -105,46 +105,69 @@ public class EmailService {
 
             message.setText(
 
+        "🚨 CUSTOMER SUPPORT ESCALATION\n\n"
 
-                    "A ticket needs human support."
+        +
 
+        "AI could not resolve this issue.\n"
 
-                    +
+        +
 
-                    "\n\nTicket ID: "
+        "Human agent action required.\n\n"
 
-                    + ticket.getId()
+        +
 
+        "Ticket ID: "
 
-                    +
+        + ticket.getId()
 
-                    "\nTitle: "
+        +
 
-                    + ticket.getTitle()
+        "\n\nTitle:\n"
 
+        + ticket.getTitle()
 
-                    +
+        +
 
-                    "\nDescription: "
+        "\n\nCustomer Issue:\n"
 
-                    + ticket.getDescription()
+        + ticket.getDescription()
 
+        +
 
-                    +
+        "\n\nCategory: "
 
-                    "\nPriority: "
+        + ticket.getCategory()
 
-                    + ticket.getPriority()
+        +
 
+        "\nPriority: "
 
-                    +
+        + ticket.getPriority()
 
-                    "\nAttempts: "
+        +
 
-                    + ticket.getAttemptCount()
+        "\nAI Attempts: "
 
+        + ticket.getAttemptCount()
 
-            );
+        +
+
+        "\nStatus: "
+
+        + ticket.getStatus()
+
+        +
+
+        "\n\nAI Conversation Summary:\n"
+
+        + ticket.getConversationSummary()
+
+        +
+
+        "\n\nPlease contact customer and resolve manually."
+
+);
 
 
 

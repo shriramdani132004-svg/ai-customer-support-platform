@@ -1,16 +1,25 @@
 import { useState } from "react";
 
+
 import Navbar from "../components/Navbar";
 
-import { createTicket } from "../services/ticketService";
 
 import { getAiResponse } from "../services/aiService";
+
+
+import { getTicketMessages } from "../services/agentService";
+
+
 
 
 
 
 
 function Chat(){
+
+
+
+    const [ticketId,setTicketId] = useState("");
 
 
 
@@ -35,10 +44,84 @@ function Chat(){
 
 
 
+
+    const loadMessages = async(id)=>{
+
+
+        if(id.trim()===""){
+
+            return;
+
+        }
+
+
+
+        try{
+
+
+            const data = await getTicketMessages(id);
+
+
+
+            setChat(
+
+                data.map(
+
+                    msg=>({
+
+                        sender:msg.sender,
+
+                        text:msg.message
+
+                    })
+
+                )
+
+            );
+
+
+        }
+
+        catch(error){
+
+
+            setChat([]);
+
+
+        }
+
+
+    };
+
+
+
+
+
+
+
+
+
+
+
     const sendMessage = async(e)=>{
 
 
         e.preventDefault();
+
+
+
+
+        if(ticketId.trim()===""){
+
+
+            setError("Enter ticket id first");
+
+
+            return;
+
+
+        }
+
 
 
 
@@ -58,11 +141,14 @@ function Chat(){
 
 
 
+
+
         setChat(
 
-            previous => [
+            previous=>[
 
                 ...previous,
+
 
                 {
 
@@ -82,11 +168,7 @@ function Chat(){
 
         setMessage("");
 
-
-
         setLoading(true);
-
-
 
         setError("");
 
@@ -99,105 +181,40 @@ function Chat(){
         try{
 
 
+            await getAiResponse(
 
-            const ticketResponse = await createTicket({
+                ticketId,
 
-
-                title:userMessage.substring(0,30),
-
-
-                description:userMessage,
-
-
-                status:"OPEN",
-
-
-                priority:"LOW"
-
-
-            });
-
-
-
-
-
-
-
-
-            const ticket = ticketResponse.data || ticketResponse;
-
-
-
-
-
-
-
-
-            const aiResponse = await getAiResponse(
-
-
-                ticket.id
-
+                userMessage
 
             );
 
 
 
 
+            await loadMessages(
 
-
-
-
-
-            setChat(
-
-                previous => [
-
-                    ...previous,
-
-
-                    {
-
-                        sender:"AI",
-
-
-                        text:
-                            aiResponse.data?.content
-                            ||
-                            aiResponse.data?.message
-                            ||
-                            aiResponse.message
-                            ||
-                            "AI response generated"
-
-
-                    }
-
-                ]
+                ticketId
 
             );
-
 
 
         }
+
         catch(error){
-
-
 
 
 
             setError(
 
-
-                "Unable to contact AI support"
-
+                "Unable to contact support"
 
             );
 
 
-
-
         }
+
+
         finally{
 
 
@@ -218,10 +235,7 @@ function Chat(){
 
 
 
-
-
     return(
-
 
 
         <>
@@ -233,7 +247,9 @@ function Chat(){
 
 
 
+
             <div className="p-10 bg-gray-100 min-h-screen">
+
 
 
 
@@ -253,6 +269,31 @@ function Chat(){
 
 
 
+                <input
+
+                    className="border p-3 mb-5 w-full"
+
+                    placeholder="Enter Ticket ID"
+
+                    value={ticketId}
+
+                    onChange={(e)=>{
+
+                        setTicketId(e.target.value);
+
+                        loadMessages(e.target.value);
+
+                    }}
+
+                />
+
+
+
+
+
+
+
+
 
                 <div className="bg-white rounded shadow p-5 mb-5 min-h-96">
 
@@ -263,11 +304,9 @@ function Chat(){
 
                     {
 
-
                         chat.map(
 
                             (item,index)=>(
-
 
 
 
@@ -281,34 +320,29 @@ function Chat(){
 
 
 
+
                                     <b>
 
-
                                         {item.sender}:
-
 
                                     </b>
 
 
 
 
-
                                     <p>
-
 
                                         {item.text}
 
-
                                     </p>
+
 
 
 
                                 </div>
 
 
-
                             )
-
 
                         )
 
@@ -322,21 +356,15 @@ function Chat(){
 
                     {
 
-
                         loading &&
-
 
                         <p>
 
-
                             AI thinking...
-
 
                         </p>
 
-
                     }
-
 
 
 
@@ -346,18 +374,13 @@ function Chat(){
 
                     {
 
-
                         error &&
-
 
                         <p className="text-red-500">
 
-
                             {error}
 
-
                         </p>
-
 
                     }
 
@@ -366,8 +389,6 @@ function Chat(){
 
 
                 </div>
-
-
 
 
 
@@ -387,13 +408,14 @@ function Chat(){
 
 
 
+
                     <input
 
 
                         className="border p-3 flex-1"
 
 
-                        placeholder="Describe your issue..."
+                        placeholder="Ask AI about this ticket..."
 
 
                         value={message}
@@ -412,9 +434,7 @@ function Chat(){
 
                     <button
 
-
                         className="bg-blue-600 text-white p-3"
-
 
                     >
 
@@ -428,7 +448,9 @@ function Chat(){
 
 
 
+
                 </form>
+
 
 
 
@@ -438,13 +460,10 @@ function Chat(){
 
 
 
-
         </>
 
 
-
     );
-
 
 
 }

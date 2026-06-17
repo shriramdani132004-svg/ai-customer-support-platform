@@ -4,26 +4,40 @@ package com.support.backend.entity;
 
 import java.time.LocalDateTime;
 
+
 import jakarta.persistence.Entity;
+
 import jakarta.persistence.GeneratedValue;
+
 import jakarta.persistence.GenerationType;
+
 import jakarta.persistence.Id;
+
 import jakarta.persistence.Table;
 
 
 
 
 
+
+
 @Entity
+
 @Table(name = "tickets")
+
 public class Ticket {
 
 
 
 
+
     @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
+
+
 
 
 
@@ -34,7 +48,10 @@ public class Ticket {
 
 
 
+
     private String description;
+
+
 
 
 
@@ -44,7 +61,29 @@ public class Ticket {
 
 
 
+
+
     private String priority;
+
+
+	private String conversationSummary;
+
+
+
+
+
+
+    private String category;
+
+
+
+
+
+
+    private String summary;
+
+
+
 
 
 
@@ -55,13 +94,20 @@ public class Ticket {
 
 
 
+
+
+
     private Boolean escalated = false;
 
 
 
 
 
+
+
+
     private LocalDateTime createdAt =
+
             LocalDateTime.now();
 
 
@@ -71,7 +117,11 @@ public class Ticket {
 
 
 
-    public Long getId() {
+
+
+
+
+    public Long getId(){
 
         return id;
 
@@ -79,7 +129,8 @@ public class Ticket {
 
 
 
-    public void setId(Long id) {
+
+    public void setId(Long id){
 
         this.id = id;
 
@@ -91,7 +142,10 @@ public class Ticket {
 
 
 
-    public String getTitle() {
+
+
+
+    public String getTitle(){
 
         return title;
 
@@ -100,7 +154,8 @@ public class Ticket {
 
 
 
-    public void setTitle(String title) {
+
+    public void setTitle(String title){
 
         this.title = title;
 
@@ -113,7 +168,8 @@ public class Ticket {
 
 
 
-    public String getDescription() {
+
+    public String getDescription(){
 
         return description;
 
@@ -123,7 +179,7 @@ public class Ticket {
 
 
 
-    public void setDescription(String description) {
+    public void setDescription(String description){
 
         this.description = description;
 
@@ -137,7 +193,8 @@ public class Ticket {
 
 
 
-    public String getStatus() {
+
+    public String getStatus(){
 
         return status;
 
@@ -147,7 +204,7 @@ public class Ticket {
 
 
 
-    public void setStatus(String status) {
+    public void setStatus(String status){
 
         this.status = status;
 
@@ -160,7 +217,9 @@ public class Ticket {
 
 
 
-    public String getPriority() {
+
+
+    public String getPriority(){
 
         return priority;
 
@@ -169,7 +228,8 @@ public class Ticket {
 
 
 
-    public void setPriority(String priority) {
+
+    public void setPriority(String priority){
 
         this.priority = priority;
 
@@ -182,7 +242,58 @@ public class Ticket {
 
 
 
-    public Integer getAttemptCount() {
+
+    public String getCategory(){
+
+        return category;
+
+    }
+
+
+
+
+
+    public void setCategory(String category){
+
+        this.category = category;
+
+    }
+
+
+
+
+
+
+
+
+
+
+    public String getSummary(){
+
+        return summary;
+
+    }
+
+
+
+
+
+    public void setSummary(String summary){
+
+        this.summary = summary;
+
+    }
+
+
+
+
+
+
+
+
+
+
+    public Integer getAttemptCount(){
 
         return attemptCount;
 
@@ -191,7 +302,8 @@ public class Ticket {
 
 
 
-    public void setAttemptCount(Integer attemptCount) {
+
+    public void setAttemptCount(Integer attemptCount){
 
         this.attemptCount = attemptCount;
 
@@ -205,7 +317,8 @@ public class Ticket {
 
 
 
-    public Boolean getEscalated() {
+
+    public Boolean getEscalated(){
 
         return escalated;
 
@@ -215,7 +328,7 @@ public class Ticket {
 
 
 
-    public void setEscalated(Boolean escalated) {
+    public void setEscalated(Boolean escalated){
 
         this.escalated = escalated;
 
@@ -228,7 +341,9 @@ public class Ticket {
 
 
 
-    public LocalDateTime getCreatedAt() {
+
+
+    public LocalDateTime getCreatedAt(){
 
         return createdAt;
 
@@ -238,11 +353,32 @@ public class Ticket {
 
 
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt){
 
         this.createdAt = createdAt;
 
     }
+
+public String getConversationSummary() {
+
+
+    return conversationSummary;
+
+
+}
+
+
+
+
+
+public void setConversationSummary(String conversationSummary) {
+
+
+    this.conversationSummary = conversationSummary;
+
+
+}
+
 
 
 

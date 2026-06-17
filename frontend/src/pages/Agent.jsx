@@ -261,6 +261,61 @@ function Agent(){
 
                             <p>{ticket.description}</p>
 
+			    
+
+
+                            <p>
+
+
+                                Priority: {ticket.priority}
+
+
+                            </p>
+
+
+
+
+
+                            <p>
+
+
+                                Category: {ticket.category}
+
+
+                            </p>
+
+
+
+
+
+                            <div className="bg-gray-100 p-3 mt-3">
+
+
+                                <b>
+
+
+                                    AI Summary:
+
+
+                                </b>
+
+
+
+
+                                <p>
+
+
+                                    {ticket.summary}
+
+
+                                </p>
+
+
+
+                            </div>
+
+
+
 
 
 

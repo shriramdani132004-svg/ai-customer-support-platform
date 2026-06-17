@@ -14,8 +14,13 @@ import com.support.backend.entity.Ticket;
 
 
 
+
 public interface TicketRepository
+
         extends JpaRepository<Ticket,Long> {
+
+
+
 
 
 
@@ -25,6 +30,37 @@ public interface TicketRepository
             String status
 
     );
+
+
+
+
+
+
+
+
+
+    long countByStatus(
+
+            String status
+
+    );
+
+
+
+
+
+
+
+
+
+
+    long countByPriority(
+
+            String priority
+
+    );
+
+
 
 
 

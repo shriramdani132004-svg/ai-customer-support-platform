@@ -1,7 +1,6 @@
 package com.support.backend.service;
 
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,33 +11,31 @@ import com.support.backend.entity.Ticket;
 import com.support.backend.exception.ResourceNotFoundException;
 import com.support.backend.repository.ChatMessageRepository;
 import com.support.backend.repository.TicketRepository;
-
-
-
-
+import org.springframework.data.redis.core.RedisTemplate;
+import com.support.backend.kafka.TicketEventProducer;
 
 
 @Service
 public class TicketService {
 
 
-
-
-
     private final TicketRepository ticketRepository;
-
 
     private final AiService aiService;
 
-
     private final EmailService emailService;
 
+    private final TicketAnalysisService ticketAnalysisService;
 
     private final ChatMessageRepository chatMessageRepository;
 
+    private final PriorityService priorityService;
 
+    private final SummaryService summaryService;
 
+	private final RedisTemplate<String,Object> redisTemplate;
 
+	private final TicketEventProducer ticketEventProducer;
 
 
 
@@ -50,31 +47,37 @@ public class TicketService {
 
             EmailService emailService,
 
-            ChatMessageRepository chatMessageRepository
+            TicketAnalysisService ticketAnalysisService,
+
+            ChatMessageRepository chatMessageRepository,
+
+            PriorityService priorityService,
+
+            SummaryService summaryService,
+
+		RedisTemplate<String,Object> redisTemplate,
+
+		TicketEventProducer ticketEventProducer
 
     ){
 
+        this.ticketRepository = ticketRepository;
 
+        this.aiService = aiService;
 
-        this.ticketRepository =
-                ticketRepository;
+        this.emailService = emailService;
 
+        this.ticketAnalysisService = ticketAnalysisService;
 
+        this.chatMessageRepository = chatMessageRepository;
 
-        this.aiService =
-                aiService;
+        this.priorityService = priorityService;
 
+        this.summaryService = summaryService;
 
+	this.redisTemplate = redisTemplate;
 
-        this.emailService =
-                emailService;
-
-
-
-        this.chatMessageRepository =
-                chatMessageRepository;
-
-
+	this.ticketEventProducer = ticketEventProducer;
 
     }
 
@@ -84,85 +87,96 @@ public class TicketService {
 
 
 
-
-
-
-    public Ticket createTicket(
-
-            Ticket ticket
-
-    ){
-
-
-
+    public Ticket createTicket(Ticket ticket){
 
 
         if(ticket.getStatus()==null){
 
-
-            ticket.setStatus(
-
-                    "OPEN"
-
-            );
-
+            ticket.setStatus("OPEN");
 
         }
-
-
-
-
 
 
         if(ticket.getAttemptCount()==null){
 
-
-            ticket.setAttemptCount(
-
-                    0
-
-            );
-
+            ticket.setAttemptCount(0);
 
         }
-
-
-
-
-
 
 
         if(ticket.getEscalated()==null){
 
-
-            ticket.setEscalated(
-
-                    false
-
-            );
-
+            ticket.setEscalated(false);
 
         }
 
 
 
 
+        String issueText =
+
+                ticket.getTitle()
+
+                +
+
+                " "
+
+                +
+
+                ticket.getDescription();
 
 
 
-        return ticketRepository.save(
 
-                ticket
+        ticket.setPriority(
+
+                ticketAnalysisService.detectPriority(issueText)
 
         );
 
 
 
+        ticket.setCategory(
+
+                ticketAnalysisService.detectCategory(issueText)
+
+        );
+
+
+
+        ticket.setSummary(
+
+                ticketAnalysisService.generateSummary(issueText)
+
+        );
+
+
+
+        ticket.setPriority(
+
+                priorityService.detectPriority(
+
+                        ticket.getDescription()
+
+                )
+
+        );
+
+
+
+        Ticket saved = ticketRepository.save(ticket);
+
+
+redisTemplate.delete(
+
+        "tickets"
+
+);
+
+
+return saved;
+
     }
-
-
-
-
 
 
 
@@ -175,8 +189,28 @@ public class TicketService {
 
 
 
-        return ticketRepository.findAll();
+    Object cachedTickets =
 
+            redisTemplate
+
+                    .opsForValue()
+
+                    .get("tickets");
+
+
+
+
+    if(cachedTickets != null){
+
+
+        System.out.println(
+
+                "Tickets loaded from Redis"
+
+        );
+
+
+        return (List<Ticket>) cachedTickets;
 
 
     }
@@ -186,19 +220,52 @@ public class TicketService {
 
 
 
+    System.out.println(
+
+            "Tickets loaded from Database"
+
+    );
+
+
+
+
+    List<Ticket> tickets =
+
+            ticketRepository.findAll();
+
+
+
+
+
+    redisTemplate
+
+            .opsForValue()
+
+            .set(
+
+                    "tickets",
+
+                    tickets
+
+            );
+
+
+
+
+    return tickets;
+
+
+}
 
 
 
 
 
 
-    public Ticket increaseAttempt(
-
-            Long ticketId
-
-    ){
 
 
+
+    public Ticket increaseAttempt(Long ticketId){
 
 
 
@@ -206,11 +273,7 @@ public class TicketService {
 
                 ticketRepository
 
-                        .findById(
-
-                                ticketId
-
-                        )
+                        .findById(ticketId)
 
                         .orElseThrow(
 
@@ -225,54 +288,23 @@ public class TicketService {
 
 
 
-
-
-
-
-
-        int currentAttempts = 0;
-
-
+        int attempts = 0;
 
 
 
         if(ticket.getAttemptCount()!=null){
 
-
-            currentAttempts =
-
-                    ticket.getAttemptCount();
-
+            attempts = ticket.getAttemptCount();
 
         }
 
 
 
+        attempts++;
 
 
 
-
-
-        int newAttempts =
-
-                currentAttempts + 1;
-
-
-
-
-
-
-
-        ticket.setAttemptCount(
-
-                newAttempts
-
-        );
-
-
-
-
-
+        ticket.setAttemptCount(attempts);
 
 
 
@@ -280,40 +312,17 @@ public class TicketService {
 
         if(
 
-                newAttempts >= 5
+                attempts >= 5
 
                 &&
 
-                !"RESOLVED".equals(
-
-                        ticket.getStatus()
-
-                )
-
-                &&
-
-                !Boolean.TRUE.equals(
-
-                        ticket.getEscalated()
-
-                )
+                !Boolean.TRUE.equals(ticket.getEscalated())
 
         ){
 
 
 
-
-
-
-
-            ticket.setEscalated(
-
-                    true
-
-            );
-
-
-
+            ticket.setEscalated(true);
 
 
 
@@ -326,15 +335,24 @@ public class TicketService {
 
 
 
+            ticket.setConversationSummary(
 
+                    summaryService.generateSummary(
 
+                            ticket.getDescription()
 
-            emailService.sendEscalationEmail(
-
-                    ticket
+                    )
 
             );
 
+
+
+
+            ticketEventProducer.sendEscalationEvent(
+
+        	ticket.getId()
+
+		);
 
 
         }
@@ -342,22 +360,9 @@ public class TicketService {
 
 
 
-
-
-
-
-
-        return ticketRepository.save(
-
-                ticket
-
-        );
-
-
+        return ticketRepository.save(ticket);
 
     }
-
-
 
 
 
@@ -371,12 +376,11 @@ public class TicketService {
 
     public ChatMessage generateAiResponse(
 
-            Long ticketId
+            Long ticketId,
+
+            String userMessage
 
     ){
-
-
-
 
 
 
@@ -384,11 +388,7 @@ public class TicketService {
 
                 ticketRepository
 
-                        .findById(
-
-                                ticketId
-
-                        )
+                        .findById(ticketId)
 
                         .orElseThrow(
 
@@ -401,41 +401,52 @@ public class TicketService {
                         );
 
 
+		ChatMessage userChat = new ChatMessage();
 
 
+userChat.setSender(
+
+        "USER"
+
+);
 
 
+userChat.setMessage(
+
+        userMessage
+
+);
 
 
-        increaseAttempt(
+userChat.setCreatedAt(
 
-                ticketId
+        LocalDateTime.now()
 
-        );
-
-
+);
 
 
+userChat.setTicket(
+
+        ticket
+
+);
 
 
+chatMessageRepository.save(
 
+        userChat
 
+);
 
-        String aiReply =
+		if(
 
-                aiService.generateReply(
+        "RESOLVED".equals(
 
-                        ticket.getDescription()
+                ticket.getStatus()
 
-                );
+        )
 
-
-
-
-
-
-
-
+){
 
 
         ChatMessage message =
@@ -444,31 +455,19 @@ public class TicketService {
 
 
 
-
-
-
-
         message.setSender(
 
-                "AI"
+                "SYSTEM"
 
         );
-
-
-
-
 
 
 
         message.setMessage(
 
-                aiReply
+                "This ticket has already been resolved and closed. Please create a new ticket if you need more help."
 
         );
-
-
-
-
 
 
 
@@ -480,22 +479,11 @@ public class TicketService {
 
 
 
-
-
-
-
-
         message.setTicket(
 
                 ticket
 
         );
-
-
-
-
-
-
 
 
 
@@ -506,15 +494,235 @@ public class TicketService {
         );
 
 
+}
+
+
+
+
+        if("RESOLVED".equals(ticket.getStatus())){
+
+
+    ChatMessage message = new ChatMessage();
+
+
+    message.setSender("SYSTEM");
+
+
+    message.setMessage(
+
+            "This ticket is already resolved and closed. Please create a new ticket if you need further support."
+
+    );
+
+
+    message.setCreatedAt(
+
+            LocalDateTime.now()
+
+    );
+
+
+    message.setTicket(ticket);
+
+
+    return chatMessageRepository.save(message);
+
+
+}
+
+
+
+
+if(Boolean.TRUE.equals(ticket.getEscalated())){
+
+
+    ChatMessage message = new ChatMessage();
+
+
+    message.setSender("SYSTEM");
+
+
+    message.setMessage(
+
+            "Your ticket is assigned to a human support agent. Please wait for the agent response."
+
+    );
+
+
+    message.setCreatedAt(
+
+            LocalDateTime.now()
+
+    );
+
+
+    message.setTicket(ticket);
+
+
+    return chatMessageRepository.save(message);
+
+
+}
+
+
+
+
+
+
+
+
+        Ticket updatedTicket =
+
+                increaseAttempt(ticketId);
+
+
+
+
+
+
+        if(Boolean.TRUE.equals(updatedTicket.getEscalated())){
+
+
+
+            ChatMessage message = new ChatMessage();
+
+
+
+            message.setSender("SYSTEM");
+
+
+
+            message.setMessage(
+
+                    "AI could not resolve your issue after multiple attempts. Your ticket has been escalated to our human support team and email notification has been sent."
+
+            );
+
+
+
+            message.setCreatedAt(
+
+                    LocalDateTime.now()
+
+            );
+
+
+
+            message.setTicket(updatedTicket);
+
+
+
+            return chatMessageRepository.save(message);
+
+        }
+
+
+
+
+
+
+
+
+        List<ChatMessage> oldMessages =
+
+                chatMessageRepository.findByTicketId(ticketId);
+
+
+
+
+        StringBuilder conversation =
+
+                new StringBuilder();
+
+
+
+
+        for(ChatMessage old : oldMessages){
+
+
+            conversation
+
+                    .append(old.getSender())
+
+                    .append(": ")
+
+                    .append(old.getMessage())
+
+                    .append("\n");
+
+        }
+
+
+
+
+
+
+        conversation
+
+                .append("USER: ")
+
+                .append(userMessage);
+
+
+
+
+
+
+
+        String aiReply =
+
+                aiService.generateReply(
+
+                        conversation.toString()
+
+                );
+
+
+
+
+
+
+        ChatMessage message = new ChatMessage();
+
+
+
+        message.setSender("AI");
+
+
+
+        message.setMessage(aiReply);
+
+
+
+        message.setCreatedAt(
+
+                LocalDateTime.now()
+
+        );
+
+
+
+        message.setTicket(ticket);
+
+
+
+
+
+        return chatMessageRepository.save(message);
+
 
     }
 
 
-    public List<ChatMessage> getTicketMessages(
 
-            Long ticketId
 
-    ){
+
+
+
+
+
+
+    public List<ChatMessage> getTicketMessages(Long ticketId){
 
 
 
@@ -535,18 +743,9 @@ public class TicketService {
 
 
 
-
-
-        return chatMessageRepository.findByTicketId(
-
-                ticketId
-
-        );
-
-
+        return chatMessageRepository.findByTicketId(ticketId);
 
     }
-
 
 
 }

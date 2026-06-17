@@ -2,8 +2,7 @@ import api from "../api/axiosConfig";
 
 
 
-
-export const getAiResponse = async(ticketId)=>{
+export const getAiResponse = async(ticketId, message)=>{
 
 
     try{
@@ -11,7 +10,11 @@ export const getAiResponse = async(ticketId)=>{
 
         const response = await api.post(
 
-            `/tickets/${ticketId}/ai-response`
+            `/tickets/${ticketId}/ai-response`,
+
+            {
+                message: message
+            }
 
         );
 

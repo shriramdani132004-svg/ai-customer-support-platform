@@ -17,7 +17,7 @@ import com.support.backend.entity.Ticket;
 import com.support.backend.service.TicketService;
 
 
-
+import com.support.backend.dto.AiRequest;
 
 
 
@@ -115,23 +115,27 @@ public class TicketController {
 
     @PostMapping("/{id}/ai-response")
 
-    public ChatMessage generateAiResponse(
+public ChatMessage generateAiResponse(
 
-            @PathVariable Long id
+        @PathVariable Long id,
 
-    ){
+        @RequestBody AiRequest request
 
-
-
-        return ticketService.generateAiResponse(
-
-                id
-
-        );
+){
 
 
 
-    }
+    return ticketService.generateAiResponse(
+
+            id,
+
+            request.getMessage()
+
+    );
+
+
+
+}
 
 
 

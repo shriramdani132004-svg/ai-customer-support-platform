@@ -4,7 +4,28 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 
 
-import { getTickets } from "../services/ticketService";
+import { getAnalytics } from "../services/analyticsService";
+
+
+import {
+
+    BarChart,
+
+    Bar,
+
+    XAxis,
+
+    YAxis,
+
+    Tooltip,
+
+    ResponsiveContainer
+
+} from "recharts";
+
+
+
+
 
 
 
@@ -13,22 +34,11 @@ function Dashboard(){
 
 
 
-    const [stats,setStats] = useState({
 
 
-        total:0,
+    const [analytics,setAnalytics] = useState(null);
 
 
-        open:0,
-
-
-        resolved:0,
-
-
-        high:0
-
-
-    });
 
 
 
@@ -42,61 +52,16 @@ function Dashboard(){
         try{
 
 
-
-            const tickets = await getTickets();
-
-
-
-
-            setStats({
+            const data =
+                await getAnalytics();
 
 
 
-                total:
-
-                    tickets.length,
-
-
-
-                open:
-
-                    tickets.filter(
-
-                        ticket => ticket.status==="OPEN"
-
-                    ).length,
-
-
-
-
-                resolved:
-
-
-                    tickets.filter(
-
-                        ticket => ticket.status==="RESOLVED"
-
-                    ).length,
-
-
-
-
-                high:
-
-
-                    tickets.filter(
-
-                        ticket => ticket.priority==="HIGH"
-
-                    ).length
-
-
-
-            });
-
+            setAnalytics(data);
 
 
         }
+
 
         catch(error){
 
@@ -109,6 +74,8 @@ function Dashboard(){
 
 
     };
+
+
 
 
 
@@ -134,15 +101,102 @@ function Dashboard(){
 
 
 
-    return(
+    if(!analytics){
 
+
+
+        return(
+
+            <>
+
+                <Navbar />
+
+                <h1 className="p-10">
+
+                    Loading...
+
+                </h1>
+
+
+            </>
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    const chartData = [
+
+
+
+        {
+
+            name:"Open",
+
+            value:analytics.openTickets
+
+        },
+
+
+
+        {
+
+            name:"Resolved",
+
+            value:analytics.resolvedTickets
+
+        },
+
+
+
+        {
+
+            name:"Escalated",
+
+            value:analytics.escalatedTickets
+
+        },
+
+
+
+        {
+
+            name:"High Priority",
+
+            value:analytics.highPriorityTickets
+
+        }
+
+
+
+    ];
+
+
+
+
+
+
+
+
+
+    return(
 
 
         <>
 
 
-
             <Navbar />
+
 
 
 
@@ -158,7 +212,7 @@ function Dashboard(){
                 <h1 className="text-3xl font-bold mb-8">
 
 
-                    AI Support Analytics
+                    Analytics Dashboard
 
 
                 </h1>
@@ -171,31 +225,25 @@ function Dashboard(){
 
 
 
-                <div className="grid grid-cols-4 gap-5">
+                <div className="grid grid-cols-5 gap-5 mb-10">
 
 
 
 
 
+                    <div className="bg-white p-5 shadow rounded">
 
 
-
-                    <div className="bg-white p-6 rounded shadow">
-
+                        Total
 
 
-                        <h2>Total Tickets</h2>
+                        <h2 className="text-3xl font-bold">
 
 
-
-                        <p className="text-3xl font-bold">
-
-
-                            {stats.total}
+                            {analytics.totalTickets}
 
 
-                        </p>
-
+                        </h2>
 
 
                     </div>
@@ -208,24 +256,19 @@ function Dashboard(){
 
 
 
-                    <div className="bg-white p-6 rounded shadow">
+                    <div className="bg-white p-5 shadow rounded">
 
 
+                        Open
 
 
-                        <h2>Open Tickets</h2>
+                        <h2 className="text-3xl font-bold">
 
 
-
-                        <p className="text-3xl font-bold">
-
-
-                            {stats.open}
+                            {analytics.openTickets}
 
 
-                        </p>
-
-
+                        </h2>
 
 
                     </div>
@@ -237,27 +280,19 @@ function Dashboard(){
 
 
 
+                    <div className="bg-white p-5 shadow rounded">
 
 
-                    <div className="bg-white p-6 rounded shadow">
+                        Resolved
 
 
+                        <h2 className="text-3xl font-bold">
 
 
-                        <h2>Resolved</h2>
+                            {analytics.resolvedTickets}
 
 
-
-
-                        <p className="text-3xl font-bold">
-
-
-                            {stats.resolved}
-
-
-                        </p>
-
-
+                        </h2>
 
 
                     </div>
@@ -269,27 +304,112 @@ function Dashboard(){
 
 
 
+                    <div className="bg-white p-5 shadow rounded">
 
 
-                    <div className="bg-white p-6 rounded shadow">
+                        Escalated
 
 
-
-                        <h2>High Priority</h2>
-
+                        <h2 className="text-3xl font-bold">
 
 
-                        <p className="text-3xl font-bold">
+                            {analytics.escalatedTickets}
 
 
-                            {stats.high}
-
-
-                        </p>
-
+                        </h2>
 
 
                     </div>
+
+
+
+
+
+
+
+
+                    <div className="bg-white p-5 shadow rounded">
+
+
+                        High Priority
+
+
+                        <h2 className="text-3xl font-bold">
+
+
+                            {analytics.highPriorityTickets}
+
+
+                        </h2>
+
+
+                    </div>
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+                <div className="bg-white p-8 rounded shadow">
+
+
+
+                    <h2 className="text-xl font-bold mb-5">
+
+
+                        Ticket Analytics
+
+
+                    </h2>
+
+
+
+
+
+
+
+
+                    <ResponsiveContainer
+
+                        width="100%"
+
+                        height={300}
+
+                    >
+
+
+
+                        <BarChart data={chartData}>
+
+
+
+                            <XAxis dataKey="name" />
+
+
+                            <YAxis />
+
+
+                            <Tooltip />
+
+
+                            <Bar dataKey="value" />
+
+
+
+                        </BarChart>
+
+
+
+                    </ResponsiveContainer>
 
 
 
@@ -302,19 +422,19 @@ function Dashboard(){
 
 
 
+
+
+
             </div>
 
 
 
         </>
 
-
-
     );
 
 
 }
-
 
 
 
