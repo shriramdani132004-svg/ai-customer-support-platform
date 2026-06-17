@@ -1,16 +1,44 @@
-function Tickets() {
+import Navbar from "../components/Navbar";
 
-    return (
 
-        <div>
 
-            <h1>Tickets Page</h1>
+function Tickets(){
 
-        </div>
 
-    )
+
+    return(
+
+
+        <>
+
+
+            <Navbar />
+
+
+
+            <div className="p-10">
+
+
+                <h1 className="text-3xl font-bold">
+
+
+                    Tickets Page
+
+
+                </h1>
+
+
+            </div>
+
+
+        </>
+
+
+    );
+
 
 }
 
 
-export default Tickets
+
+export default Tickets;

@@ -2,16 +2,26 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
 import Login from "./pages/Login";
+
 import Register from "./pages/Register";
+
 import Dashboard from "./pages/Dashboard";
+
 import Tickets from "./pages/Tickets";
+
 import Chat from "./pages/Chat";
 
 
-function App() {
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 
-    return (
+
+
+
+function App(){
+
+
+    return(
 
 
         <BrowserRouter>
@@ -20,40 +30,115 @@ function App() {
             <Routes>
 
 
-                <Route 
-                    path="/" 
-                    element={<Login />} 
+
+                <Route
+
+                    path="/"
+
+                    element={<Login />}
+
                 />
 
 
-                <Route 
-                    path="/login" 
-                    element={<Login />} 
+
+
+                <Route
+
+                    path="/login"
+
+                    element={<Login />}
+
                 />
 
 
-                <Route 
-                    path="/register" 
-                    element={<Register />} 
+
+
+                <Route
+
+                    path="/register"
+
+                    element={<Register />}
+
                 />
 
 
-                <Route 
-                    path="/dashboard" 
-                    element={<Dashboard />} 
+
+
+
+
+
+                <Route
+
+                    path="/dashboard"
+
+                    element={
+
+
+                        <ProtectedRoute>
+
+
+                            <Dashboard />
+
+
+                        </ProtectedRoute>
+
+
+                    }
+
                 />
 
 
-                <Route 
-                    path="/tickets" 
-                    element={<Tickets />} 
+
+
+
+
+
+                <Route
+
+                    path="/tickets"
+
+                    element={
+
+
+                        <ProtectedRoute>
+
+
+                            <Tickets />
+
+
+                        </ProtectedRoute>
+
+
+                    }
+
                 />
 
 
-                <Route 
-                    path="/chat" 
-                    element={<Chat />} 
+
+
+
+
+
+                <Route
+
+                    path="/chat"
+
+                    element={
+
+
+                        <ProtectedRoute>
+
+
+                            <Chat />
+
+
+                        </ProtectedRoute>
+
+
+                    }
+
                 />
+
 
 
             </Routes>
@@ -66,6 +151,7 @@ function App() {
 
 
 }
+
 
 
 export default App;

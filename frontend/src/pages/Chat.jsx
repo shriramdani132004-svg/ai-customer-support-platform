@@ -1,16 +1,44 @@
-function Chat() {
+import Navbar from "../components/Navbar";
 
-    return (
 
-        <div>
 
-            <h1>AI Chat Page</h1>
+function Chat(){
 
-        </div>
 
-    )
+
+    return(
+
+
+        <>
+
+
+            <Navbar />
+
+
+
+            <div className="p-10">
+
+
+                <h1 className="text-3xl font-bold">
+
+
+                    AI Chat Page
+
+
+                </h1>
+
+
+            </div>
+
+
+        </>
+
+
+    );
+
 
 }
 
 
-export default Chat
+
+export default Chat;

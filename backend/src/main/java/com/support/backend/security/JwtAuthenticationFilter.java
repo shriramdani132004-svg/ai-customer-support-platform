@@ -4,14 +4,22 @@ package com.support.backend.security;
 import java.io.IOException;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.stereotype.Component;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
+
 import jakarta.servlet.FilterChain;
+
 import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 
@@ -23,10 +31,12 @@ public class JwtAuthenticationFilter
 
 
 
+
     private final JwtService jwtService;
 
 
     private final CustomUserDetailsService userDetailsService;
+
 
 
 
@@ -37,7 +47,7 @@ public class JwtAuthenticationFilter
 
             CustomUserDetailsService userDetailsService
 
-    ) {
+    ){
 
 
         this.jwtService = jwtService;
@@ -63,34 +73,45 @@ public class JwtAuthenticationFilter
 
             FilterChain filterChain
 
-
     ) throws ServletException, IOException {
 
 
 
 
+
         String header =
+
                 request.getHeader(
+
                         "Authorization"
+
                 );
 
 
 
 
 
-        if (
+
+        if(
+
                 header == null
 
                 ||
 
                 !header.startsWith("Bearer ")
-        ) {
+
+        ){
+
 
 
             filterChain.doFilter(
+
                     request,
+
                     response
+
             );
+
 
 
             return;
@@ -102,29 +123,46 @@ public class JwtAuthenticationFilter
 
 
 
+
+
+
         String token =
+
                 header.substring(7);
 
 
 
 
+
         String email =
-                jwtService.extractEmail(token);
+
+                jwtService.extractEmail(
+
+                        token
+
+                );
+
 
 
 
 
 
         UserDetails userDetails =
+
                 userDetailsService
 
-                        .loadUserByUsername(email);
+                        .loadUserByUsername(
+
+                                email
+
+                        );
 
 
 
 
 
-        if (
+
+        if(
 
                 jwtService.isTokenValid(
 
@@ -134,7 +172,10 @@ public class JwtAuthenticationFilter
 
                 )
 
-        ) {
+        ){
+
+
+
 
 
 
@@ -154,17 +195,23 @@ public class JwtAuthenticationFilter
 
 
 
+
             SecurityContextHolder
 
                     .getContext()
 
                     .setAuthentication(
+
                             authToken
+
                     );
 
 
 
+
         }
+
+
 
 
 
@@ -180,6 +227,7 @@ public class JwtAuthenticationFilter
 
 
     }
+
 
 
 

@@ -1,16 +1,44 @@
-function Dashboard() {
+import Navbar from "../components/Navbar";
 
-    return (
 
-        <div>
 
-            <h1>Dashboard Page</h1>
+function Dashboard(){
 
-        </div>
 
-    )
+
+    return(
+
+
+        <>
+
+
+            <Navbar />
+
+
+
+            <div className="p-10">
+
+
+                <h1 className="text-3xl font-bold">
+
+
+                    Dashboard Page
+
+
+                </h1>
+
+
+            </div>
+
+
+        </>
+
+
+    );
+
 
 }
 
 
-export default Dashboard
+
+export default Dashboard;
